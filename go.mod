@@ -1,0 +1,1 @@
+module "github.com/ricksilliker/shotgun-event-server"
