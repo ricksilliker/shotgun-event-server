@@ -1,4 +1,4 @@
-package shotgun_consumer
+package server
 
 import (
 	"bytes"
@@ -39,10 +39,10 @@ type PaginationParameter struct {
 }
 
 type SearchRequest struct {
-	Filters [][]string            	`json:"filters"`
-	Fields  []string              	`json:"fields"`
-	Sort    string              	`json:"sort,omitempty"`
-	Page  	*PaginationParameter 	`json:"page,omitempty"`
+	Filters [][]string           `json:"filters"`
+	Fields  []string             `json:"fields"`
+	Sort    string               `json:"sort,omitempty"`
+	Page  	*PaginationParameter `json:"page,omitempty"`
 }
 
 type SearchResponse struct {
@@ -120,7 +120,7 @@ func GetLatestEventLogEntry(shotgunURL string, authToken *ShotgunAuth) (*EventLo
 			"id",
 		},
 		Sort: "-created_at",
-		Page: &PaginationParameter {
+		Page: &PaginationParameter{
 			Size: 10,
 			Number: 1,
 		},
@@ -146,7 +146,7 @@ func GetLatestEventLogEntry(shotgunURL string, authToken *ShotgunAuth) (*EventLo
 		return nil, err
 	}
 
-	return &EventLogEntry{ searchResp.Data[0].ID }, nil
+	return &EventLogEntry{searchResp.Data[0].ID }, nil
 }
 
 func GetNewEvents(shotgunURL string, authToken *ShotgunAuth, lastEventID int) (<-chan *EventLogEntry, error){
@@ -161,7 +161,7 @@ func GetNewEvents(shotgunURL string, authToken *ShotgunAuth, lastEventID int) (<
 			"id",
 		},
 		Sort: "id",
-		Page: &PaginationParameter {
+		Page: &PaginationParameter{
 			Size: 10,
 			Number: 1,
 		},
@@ -190,7 +190,7 @@ func GetNewEvents(shotgunURL string, authToken *ShotgunAuth, lastEventID int) (<
 	chnl := make(chan *EventLogEntry)
 	go func() {
 		for _, entry := range searchResp.Data {
-			chnl <- &EventLogEntry{ entry.ID }
+			chnl <- &EventLogEntry{entry.ID }
 		}
 		close(chnl)
 	}()

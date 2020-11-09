@@ -1,1 +1,0 @@
-module "github.com/ricksilliker/shotgun-event-server/shotgun-consumer"

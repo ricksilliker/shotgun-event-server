@@ -3,7 +3,6 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	shotgun_consumer "github.com/ricksilliker/shotgun-event-server/shotgun-consumer"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
 )
@@ -13,11 +12,12 @@ func processEvents(config *ServerConfig, lastEventID int) {
 	var continueToProcess bool
 
 	url := "https://brazenanimation.shotgunstudio.com/api/v1"
-	auth := shotgun_consumer.AuthenticateAsScript(url, config.ShotgunScriptName, config.ShotgunScriptKey)
+	auth := AuthenticateAsScript(url, config.ShotgunScriptName, config.ShotgunScriptKey)
 
 	for ok := true; ok; ok = !continueToProcess {
-		events, _ := shotgun_consumer.GetNewEvents(url, auth, lastEventID)
+		events, _ := GetNewEvents(url, auth, lastEventID)
 		for event := range events {
+			LogArgs(event)
 			//for _, plugin := range plugins {
 			//	plugin.process(event)
 			//}
@@ -28,7 +28,7 @@ func processEvents(config *ServerConfig, lastEventID int) {
 	}
 }
 
-func storeEventID(event *shotgun_consumer.EventLogEntry) {
+func storeEventID(event *EventLogEntry) {
 	data, err := json.Marshal(event)
 	if err != nil {
 		logrus.Error("failed to marshal ShotgunEventEntry data")

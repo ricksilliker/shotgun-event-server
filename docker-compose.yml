@@ -1,0 +1,16 @@
+version: '3'
+services:
+  database:
+    image: postgres
+    environment:
+      POSTGRES_USER=unicorn
+    volumes:
+      - database-data:/var/lib/postgresql/data/
+  event-client:
+  event-server:
+    build:
+      context: server
+      dockerfile: Dockerfile
+
+volumes:
+  database-data:
