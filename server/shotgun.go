@@ -56,10 +56,16 @@ type SearchResponse struct {
 
 type Record struct {
 	ID int `json:"id"`
+	Attributes RecordAttributes `json:"attributes"`
+}
+
+type RecordAttributes struct {
+	EventType string `json:"event_type"`
 }
 
 type EventLogEntry struct {
 	ID int `json:"id"`
+	EventType string `json:"event_type"`
 }
 
 
@@ -146,7 +152,10 @@ func GetLatestEventLogEntry(shotgunURL string, authToken *ShotgunAuth) (*EventLo
 		return nil, err
 	}
 
-	return &EventLogEntry{searchResp.Data[0].ID }, nil
+	return &EventLogEntry{
+		ID: searchResp.Data[0].ID,
+		EventType: searchResp.Data[0].Attributes.EventType,
+	}, nil
 }
 
 func GetNewEvents(shotgunURL string, authToken *ShotgunAuth, lastEventID int) (<-chan *EventLogEntry, error){
@@ -159,6 +168,7 @@ func GetNewEvents(shotgunURL string, authToken *ShotgunAuth, lastEventID int) (<
 		},
 		Fields:[]string {
 			"id",
+			"event_type",
 		},
 		Sort: "id",
 		Page: &PaginationParameter{
@@ -190,7 +200,10 @@ func GetNewEvents(shotgunURL string, authToken *ShotgunAuth, lastEventID int) (<
 	chnl := make(chan *EventLogEntry)
 	go func() {
 		for _, entry := range searchResp.Data {
-			chnl <- &EventLogEntry{entry.ID }
+			chnl <- &EventLogEntry{
+				ID: entry.ID,
+				EventType: entry.Attributes.EventType,
+			}
 		}
 		close(chnl)
 	}()
